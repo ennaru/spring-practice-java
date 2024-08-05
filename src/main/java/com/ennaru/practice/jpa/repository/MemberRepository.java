@@ -5,10 +5,10 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-public interface MemberRepository extends CrudRepository<Member, String> {
+public interface MemberRepository extends CrudRepository<Member, Long> {
 
-    List<Member> findByMember_name(String name);
+    List<Member> findByMemberName(String memberName);
 
-    Member findByMember_id(String member_id);
+    Member findByMemberId(long memberId);
 
 }

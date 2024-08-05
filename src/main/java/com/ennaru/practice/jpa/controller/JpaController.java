@@ -23,6 +23,9 @@ public class JpaController {
         memberRepository.save(new Member("도우너", "20210525"));
         memberRepository.save(new Member("고길동", "1990406"));
 
+        memberRepository.findAll().forEach((el) -> {
+            System.out.println(el.toString());
+        });
 
         return BaseResponse.builder()
                 .result_code("0")

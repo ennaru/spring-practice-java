@@ -4,39 +4,28 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * Member Object (without Lombok)
  */
 @Entity
+@Data
+@NoArgsConstructor
 public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String member_id;
-    private String member_name;
-    private String register_date;
+    private long memberId;
+    private String memberName;
+    private String registerDate;
 
-    public Member(String name, String date) {
-        this.member_name = name;
-        this.register_date = date;
+    public Member(String memberName, String registerDate) {
+        this.memberName = memberName;
+        this.registerDate = registerDate;
 
-    }
-
-    public String getMember_name() {
-        return member_name;
-    }
-
-    public void setMember_name(String member_name) {
-        this.member_name = member_name;
-    }
-
-    public String getRegister_date() {
-        return register_date;
-    }
-
-    public void setRegister_date(String register_date) {
-        this.register_date = register_date;
     }
 
 }
