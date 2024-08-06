@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
  */
 @Entity
 @Data
-@NoArgsConstructor
 public class Member {
 
     @Id
@@ -25,7 +24,6 @@ public class Member {
     public Member(String memberName, String registerDate) {
         this.memberName = memberName;
         this.registerDate = registerDate;
-
     }
 
 }
