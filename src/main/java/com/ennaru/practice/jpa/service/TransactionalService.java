@@ -4,12 +4,8 @@ import com.ennaru.practice.jpa.domain.Member;
 import com.ennaru.practice.jpa.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.reactive.TransactionContextManager;
-import org.springframework.transaction.support.AbstractPlatformTransactionManager;
-import org.springframework.transaction.support.AbstractTransactionStatus;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Slf4j
@@ -28,18 +24,18 @@ public class TransactionalService {
      * Propagation.REQUIRED
      */
     @Transactional
-    public void requiredTest() {
-        getTransactionStatus();
+    public void requiredTest(boolean rollbackFlag) {
         memberRepository.save(new Member("회원1", "19980101"));
-        transactionalSubService.requiredTest();
+        getTransactionStatus("BeforeTX");
+        transactionalSubService.requiredTest(rollbackFlag);
     }
 
     /**
      * Propagation.SUPPORTS
      */
     @Transactional(propagation = Propagation.SUPPORTS)
-    public void supportsTest() {
-        getTransactionStatus();
+    public void supportsTest(String rollbackYn) {
+        getTransactionStatus("BeforeTX");
         memberRepository.save(new Member("회원1", "19950101"));
         transactionalSubService.supportsTest();
     }
@@ -49,10 +45,10 @@ public class TransactionalService {
      * [Propagation.REQUIRED] -> [Propagation.MANDATORY]
      */
     @Transactional
-    public void mandatoryTest() {
-        getTransactionStatus();
+    public void mandatoryTest(String rollbackYn) {
+        getTransactionStatus("BeforeTX");
         memberRepository.save(new Member("휴고", "19950101"));
-        mandatoryTestWithoutTransaction();
+        mandatoryTestWithoutTransaction(rollbackYn);
     }
 
     /**
@@ -60,8 +56,8 @@ public class TransactionalService {
      * 실행 시 [IllegalTransactionStateException]이 발생합니다.
      */
     @Transactional(propagation = Propagation.MANDATORY)
-    public void mandatoryTestWithoutTransaction() {
-        getTransactionStatus();
+    public void mandatoryTestWithoutTransaction(String rollbackYn) {
+        getTransactionStatus("BeforeTX");
         memberRepository.save(new Member("삼체", "19950101"));
     }
 
@@ -69,10 +65,16 @@ public class TransactionalService {
      * Propagation.REQUIRES_NEW
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void requiresNewTest() {
-        getTransactionStatus();
+    public void requiresNewTest(boolean rollbackFlag) {
         memberRepository.save(new Member("멤버1", "19950104"));
-        transactionalSubService.requiresNewTest();
+        getTransactionStatus("BeforeTX");
+        try {
+            transactionalSubService.requiresNewTest(rollbackFlag);
+        } catch(Exception e) {
+            // 이곳에서 예외 전파가 이뤄지면 해당 메소드에서 발생한 트랜잭션도 롤백됩니다.
+            log.error(e.getMessage());
+        }
+
     }
 
     /**
@@ -80,8 +82,8 @@ public class TransactionalService {
      * 실행 시 [IllegalTransactionStateException]이 발생합니다.
      */
     @Transactional
-    public void neverTest() {
-        getTransactionStatus();
+    public void neverTest(String rollbackYn) {
+        getTransactionStatus("BeforeTX");
         memberRepository.save(new Member("포카리", "19950101"));
         transactionalSubService.neverTest();
     }
@@ -90,23 +92,19 @@ public class TransactionalService {
      * Propagation.NEVER
      */
     @Transactional(propagation = Propagation.NEVER)
-    public void neverTestWithoutTransaction() {
-        getTransactionStatus();
+    public void neverTestWithoutTransaction(String rollbackYn) {
+        getTransactionStatus("BeforeTX");
         memberRepository.save(new Member("삼체", "19950101"));
     }
 
-    public void getTransactionStatus() {
-        log.info("TX_NAME\t{}", TransactionSynchronizationManager.getCurrentTransactionName());
-    }
-
-    public void getMemberList() {
-        this.getMemberList("");
+    public void getTransactionStatus(String txStatus) {
+        log.info("[TX_NAME]\t{}", TransactionSynchronizationManager.getCurrentTransactionName());
+        getMemberList(txStatus);
     }
 
     public void getMemberList(String prefix) {
-        log.info("[{}]", prefix);
         memberRepository.findAll().forEach((el) -> {
-            log.info(el.toString());
+            log.info(String.format("%s\t%s", prefix, el.toString()));
         });
     }
 }

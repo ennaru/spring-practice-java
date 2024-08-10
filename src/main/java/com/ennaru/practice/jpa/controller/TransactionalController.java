@@ -1,6 +1,7 @@
 package com.ennaru.practice.jpa.controller;
 
 import com.ennaru.practice.common.domain.BaseResponse;
+import com.ennaru.practice.jpa.repository.MemberRepository;
 import com.ennaru.practice.jpa.service.TransactionalService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,15 +19,23 @@ import java.util.Locale;
 public class TransactionalController {
 
     private final TransactionalService transactionalService;
-    public TransactionalController(
-            TransactionalService transactionalService) {
+    private final MemberRepository memberRepository;
+    public TransactionalController(TransactionalService transactionalService, MemberRepository memberRepository) {
         this.transactionalService = transactionalService;
+        this.memberRepository = memberRepository;
     }
 
     @GetMapping("/transactional/required")
     @Operation(summary = "Propagation.REQUIRED")
-    public BaseResponse req() {
-        transactionalService.requiredTest();
+    public BaseResponse req(@RequestParam(required = false, defaultValue = "") String rollbackYn) {
+        boolean rollbackFlag = "Y".equals(rollbackYn.toUpperCase(Locale.ROOT));
+        try {
+            transactionalService.requiredTest(rollbackFlag);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        } finally {
+            getMemberList("AfterTX");
+        }
 
         return BaseResponse.builder()
                 .result_code("0")
@@ -36,8 +45,9 @@ public class TransactionalController {
 
     @GetMapping("/transactional/supports")
     @Operation(summary = "Propagation.SUPPORTS")
-    public BaseResponse supports() {
-        transactionalService.supportsTest();
+    public BaseResponse supports(@RequestParam(required = false, defaultValue = "") String rollbackYn) {
+        boolean rollbackFlag = "Y".equals(rollbackYn.toUpperCase(Locale.ROOT));
+        transactionalService.supportsTest(rollbackYn);
 
         return BaseResponse.builder()
                 .result_code("0")
@@ -48,12 +58,14 @@ public class TransactionalController {
     @Parameter(name = "newTransaction", description = "[Y]로 보내면 새 트랜잭션을 생성한 후 Propagation.Mandatory 트랜잭션을 실행합니다.")
     @GetMapping("/transactional/mandatory")
     @Operation(summary = "Propagation.MANDATORY")
-    public BaseResponse mandatory(@RequestParam(required = false, defaultValue = "") String newTransaction) {
+    public BaseResponse mandatory(
+            @RequestParam(required = false, defaultValue = "") String newTransaction,
+            @RequestParam(required = false, defaultValue = "") String rollbackYn) {
         try {
             if("Y".equals(newTransaction.toUpperCase(Locale.ROOT))) {
-                transactionalService.mandatoryTest();
+                transactionalService.mandatoryTest(rollbackYn);
             } else {
-                transactionalService.mandatoryTestWithoutTransaction();
+                transactionalService.mandatoryTestWithoutTransaction(rollbackYn);
             }
         } catch (Exception e) {
             // [Propagation.MANDATORY] 는 transaction이 없는 상태에서 실행하면 [IllegalTransactionStateException]이 발생합니다.
@@ -72,8 +84,16 @@ public class TransactionalController {
 
     @GetMapping("/transactional/requiresNew")
     @Operation(summary = "Propagation.REQUIRES_NEW")
-    public BaseResponse requiresNew() {
-        transactionalService.requiresNewTest();
+    public BaseResponse requiresNew(
+            @RequestParam(required = false, defaultValue = "") String rollbackYn) {
+        boolean rollbackFlag = "Y".equals(rollbackYn.toUpperCase(Locale.ROOT));
+        try {
+            transactionalService.requiresNewTest(rollbackFlag);
+        } catch(Exception e) {
+            log.error(e.getMessage());
+        } finally {
+            getMemberList("AfterTX");
+        }
 
         return BaseResponse.builder()
                 .result_code("0")
@@ -84,12 +104,14 @@ public class TransactionalController {
     @Parameter(name = "newTransaction", description = "[Y]로 보내면 새 트랜잭션을 생성한 후 Propagation.NEVER 트랜잭션을 실행합니다.")
     @GetMapping("/transactional/never")
     @Operation(summary = "Propagation.NEVER")
-    public BaseResponse never(@RequestParam(required = false, defaultValue = "") String newTransaction) {
+    public BaseResponse never(
+            @RequestParam(required = false, defaultValue = "") String newTransaction,
+            @RequestParam(required = false, defaultValue = "") String rollbackYn) {
         try {
             if("Y".equals(newTransaction.toUpperCase(Locale.ROOT))) {
-                transactionalService.neverTest();
+                transactionalService.neverTest(rollbackYn);
             } else {
-                transactionalService.neverTestWithoutTransaction();
+                transactionalService.neverTestWithoutTransaction(rollbackYn);
             }
         } catch (Exception e) {
             // [Propagation.NEVER] 는 transaction이 존재한 상태에서 실행하면 [IllegalTransactionStateException]이 발생합니다.
@@ -106,5 +128,10 @@ public class TransactionalController {
                 .build();
     }
 
+    public void getMemberList(String prefix) {
+        memberRepository.findAll().forEach((el) -> {
+            log.info(String.format("%s\t%s", prefix, el.toString()));
+        });
+    }
 
 }

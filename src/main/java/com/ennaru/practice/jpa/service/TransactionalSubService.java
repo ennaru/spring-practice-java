@@ -20,10 +20,13 @@ public class TransactionalSubService {
     /**
      * Propagation.REQUIRED (new transaction)
      */
-    @Transactional
-    public void requiredTest() {
+    @Transactional(rollbackFor = Exception.class)
+    public void requiredTest(boolean rollbackFlag) {
         getTransactionStatus();
         memberRepository.save(new Member("회원2", "19980102"));
+        if(rollbackFlag) {
+            throw new RuntimeException("롤백 테스트를 위해 Exception을 발생시켰습니다.");
+        }
     }
 
     /**
@@ -60,9 +63,12 @@ public class TransactionalSubService {
      * Propagation.REQUIRES_NEW
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void requiresNewTest() {
+    public void requiresNewTest(boolean rollbackFlag) {
         getTransactionStatus();
         memberRepository.save(new Member("멤버1", "19950104"));
+        if(rollbackFlag) {
+            throw new RuntimeException("롤백 테스트를 위해 Exception을 발생시켰습니다.");
+        }
     }
 
     /**
@@ -77,7 +83,7 @@ public class TransactionalSubService {
     }
 
     public void getTransactionStatus() {
-        log.info("TX_NAME\t{}", TransactionSynchronizationManager.getCurrentTransactionName());
+        log.info("[TX_NAME]\t{}", TransactionSynchronizationManager.getCurrentTransactionName());
     }
 
     public void getMemberList() {
