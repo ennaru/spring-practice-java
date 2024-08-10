@@ -4,34 +4,26 @@ import com.ennaru.practice.jpa.domain.Member;
 import com.ennaru.practice.jpa.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.reactive.TransactionContextManager;
-import org.springframework.transaction.support.AbstractPlatformTransactionManager;
-import org.springframework.transaction.support.AbstractTransactionStatus;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Slf4j
 @Service
-public class TransactionalService {
+public class TransactionalSubService {
 
     private final MemberRepository memberRepository;
-    private final TransactionalSubService transactionalSubService;
-    public TransactionalService(MemberRepository memberRepository,
-                                TransactionalSubService transactionalSubService) {
+    public TransactionalSubService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
-        this.transactionalSubService = transactionalSubService;
     }
 
     /**
-     * Propagation.REQUIRED
+     * Propagation.REQUIRED (new transaction)
      */
     @Transactional
     public void requiredTest() {
         getTransactionStatus();
-        memberRepository.save(new Member("회원1", "19980101"));
-        transactionalSubService.requiredTest();
+        memberRepository.save(new Member("회원2", "19980102"));
     }
 
     /**
@@ -41,7 +33,6 @@ public class TransactionalService {
     public void supportsTest() {
         getTransactionStatus();
         memberRepository.save(new Member("회원1", "19950101"));
-        transactionalSubService.supportsTest();
     }
 
     /**
@@ -72,27 +63,17 @@ public class TransactionalService {
     public void requiresNewTest() {
         getTransactionStatus();
         memberRepository.save(new Member("멤버1", "19950104"));
-        transactionalSubService.requiresNewTest();
     }
 
     /**
      * Propagation.NEVER
+     * [Propagation.REQUIRED] -> [Propagation.NEVER]
      * 실행 시 [IllegalTransactionStateException]이 발생합니다.
      */
-    @Transactional
+    @Transactional(propagation = Propagation.NEVER)
     public void neverTest() {
         getTransactionStatus();
-        memberRepository.save(new Member("포카리", "19950101"));
-        transactionalSubService.neverTest();
-    }
-
-    /**
-     * Propagation.NEVER
-     */
-    @Transactional(propagation = Propagation.NEVER)
-    public void neverTestWithoutTransaction() {
-        getTransactionStatus();
-        memberRepository.save(new Member("삼체", "19950101"));
+        memberRepository.save(new Member("휴고", "19950101"));
     }
 
     public void getTransactionStatus() {
