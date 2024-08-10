@@ -17,9 +17,9 @@ import java.util.Date;
 @RestController
 public class JpaController {
 
-    private MemberRepository memberRepository;
-    private BoardRepository boardRepository;
-    private AccessLogRepository accessLogRepository;
+    private final MemberRepository memberRepository;
+    private final BoardRepository boardRepository;
+    private final AccessLogRepository accessLogRepository;
     public JpaController(MemberRepository memberRepository,
                          BoardRepository boardRepository,
                          AccessLogRepository accessLogRepository) {
@@ -59,7 +59,6 @@ public class JpaController {
         boardRepository.findAll().forEach((el) -> {
             System.out.println(el.toString());
         });
-
 
         // iterator 반복문 표현 2
         for (AccessLog accessLog : accessLogRepository.findAll()) {
