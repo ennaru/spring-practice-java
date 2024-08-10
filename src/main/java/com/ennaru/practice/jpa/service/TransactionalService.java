@@ -27,30 +27,49 @@ public class TransactionalService {
         requiredTest2();
     }
 
+    /**
+     * Propagation.REQUIRED (new transaction)
+     */
     @Transactional
     private void requiredTest2() {
         getTransactionName();
         memberRepository.save(new Member("회원2", "19980102"));
     }
 
+    /**
+     * Propagation.SUPPORTS
+     */
     @Transactional(propagation = Propagation.SUPPORTS)
     public void supportsTest() {
         getTransactionName();
-        memberRepository.save(new Member("회원1", "19980101"));
+        memberRepository.save(new Member("회원1", "19950101"));
         supportsTest2();
     }
 
     @Transactional
     private void supportsTest2() {
         getTransactionName();
-        memberRepository.save(new Member("회원2", "19980102"));
+        memberRepository.save(new Member("회원2", "19950102"));
     }
 
+    /**
+     * Propagation.MANDATORY
+     * 실행 시 [IllegalTransactionStateException]이 발생합니다.
+     */
     @Transactional(propagation = Propagation.MANDATORY)
     public void mandatoryTest() {
         getTransactionName();
-        memberRepository.save(new Member("회원1", "19980101"));
-        supportsTest2();
+        memberRepository.save(new Member("삼체", "19950101"));
+    }
+
+    /**
+     * Propagation.MANDATORY
+     */
+    @Transactional
+    public void mandatoryTest2() {
+        getTransactionName();
+        memberRepository.save(new Member("휴고", "19950101"));
+        mandatoryTest();
     }
 
     public void getTransactionName() {
