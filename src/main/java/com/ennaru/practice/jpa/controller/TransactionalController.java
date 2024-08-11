@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,7 +35,7 @@ public class TransactionalController {
         } catch (Exception e) {
             log.error(e.getMessage());
         } finally {
-            getMemberList("AfterTX");
+            transactionalService.getMemberList("AfterTX");
         }
 
         return BaseResponse.builder()
@@ -92,7 +93,7 @@ public class TransactionalController {
         } catch(Exception e) {
             log.error(e.getMessage());
         } finally {
-            getMemberList("AfterTX");
+            transactionalService.getMemberList("AfterTX");
         }
 
         return BaseResponse.builder()
@@ -126,12 +127,6 @@ public class TransactionalController {
                 .result_code("0")
                 .result_message("성공")
                 .build();
-    }
-
-    public void getMemberList(String prefix) {
-        memberRepository.findAll().forEach((el) -> {
-            log.info(String.format("%s\t%s", prefix, el.toString()));
-        });
     }
 
 }

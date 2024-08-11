@@ -104,7 +104,7 @@ public class TransactionalService {
 
     public void getMemberList(String prefix) {
         memberRepository.findAll().forEach((el) -> {
-            log.info(String.format("%s\t%s", prefix, el.toString()));
+            log.info("[{}]\t{}", prefix, el.toString());
         });
     }
 }

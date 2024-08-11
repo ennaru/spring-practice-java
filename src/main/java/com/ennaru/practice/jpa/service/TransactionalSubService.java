@@ -86,14 +86,9 @@ public class TransactionalSubService {
         log.info("[TX_NAME]\t{}", TransactionSynchronizationManager.getCurrentTransactionName());
     }
 
-    public void getMemberList() {
-        this.getMemberList("");
-    }
-
     public void getMemberList(String prefix) {
-        log.info("[{}]", prefix);
         memberRepository.findAll().forEach((el) -> {
-            log.info(el.toString());
+            log.info("[{}]\t{}", prefix, el.toString());
         });
     }
 }
