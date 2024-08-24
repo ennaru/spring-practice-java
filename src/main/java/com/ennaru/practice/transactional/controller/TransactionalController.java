@@ -1,13 +1,12 @@
-package com.ennaru.practice.jpa.controller;
+package com.ennaru.practice.transactional.controller;
 
 import com.ennaru.practice.common.domain.BaseResponse;
 import com.ennaru.practice.jpa.repository.MemberRepository;
-import com.ennaru.practice.jpa.service.TransactionalService;
+import com.ennaru.practice.transactional.service.TransactionalService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
