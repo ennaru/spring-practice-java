@@ -1,19 +1,17 @@
 package com.ennaru.practice.jpa.controller;
 
 import com.ennaru.practice.common.domain.BaseResponse;
-import com.ennaru.practice.jpa.domain.AccessLog;
-import com.ennaru.practice.jpa.domain.Board;
-import com.ennaru.practice.jpa.domain.Member;
-import com.ennaru.practice.jpa.repository.AccessLogRepository;
-import com.ennaru.practice.jpa.repository.BoardRepository;
-import com.ennaru.practice.jpa.repository.MemberRepository;
+import com.ennaru.practice.jpa.domain.*;
+import com.ennaru.practice.jpa.enums.Authority;
+import com.ennaru.practice.jpa.repository.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
+@Slf4j
 @RestController
 public class JpaController {
 
@@ -26,6 +24,23 @@ public class JpaController {
         this.memberRepository = memberRepository;
         this.boardRepository = boardRepository;
         this.accessLogRepository = accessLogRepository;
+    }
+
+    @RequestMapping("/jpa/member/register")
+    public BaseResponse memberRegister() {
+
+        // save transaction
+        memberRepository.save(new Member("돌리", LocalDate.now().toString(), Authority.USER));
+
+        // find transaction
+        for (Member member : memberRepository.findAll()) {
+            log.info(member.toString());
+        }
+
+        return BaseResponse.builder()
+                .result_code("0")
+                .result_message("성공")
+                .build();
     }
 
     @RequestMapping("/jpa/member/call")
