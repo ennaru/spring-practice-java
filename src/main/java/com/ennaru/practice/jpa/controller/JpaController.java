@@ -4,6 +4,7 @@ import com.ennaru.practice.common.domain.BaseResponse;
 import com.ennaru.practice.jpa.domain.*;
 import com.ennaru.practice.jpa.enums.Authority;
 import com.ennaru.practice.jpa.repository.*;
+import com.ennaru.practice.jpa.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,13 +16,13 @@ import java.time.LocalDateTime;
 @RestController
 public class JpaController {
 
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
     private final BoardRepository boardRepository;
     private final AccessLogRepository accessLogRepository;
-    public JpaController(MemberRepository memberRepository,
+    public JpaController(MemberService memberService,
                          BoardRepository boardRepository,
                          AccessLogRepository accessLogRepository) {
-        this.memberRepository = memberRepository;
+        this.memberService = memberService;
         this.boardRepository = boardRepository;
         this.accessLogRepository = accessLogRepository;
     }
@@ -30,10 +31,10 @@ public class JpaController {
     public BaseResponse memberRegister() {
 
         // save transaction
-        memberRepository.save(new Member("돌리", LocalDate.now().toString(), Authority.USER));
+        memberService.save(new Member("돌리", LocalDate.now().toString(), Authority.USER));
 
         // find transaction
-        for (Member member : memberRepository.findAll()) {
+        for (Member member : memberService.findAll()) {
             log.info(member.toString());
         }
 
@@ -50,12 +51,12 @@ public class JpaController {
         LocalDateTime localDate = LocalDateTime.now();
 
         // data set
-        memberRepository.save(new Member("둘리", "20200101"));
-        memberRepository.save(new Member("도우너", "20210525"));
-        memberRepository.save(new Member("고길동", "1990406"));
+        memberService.save(new Member("둘리", "20200101"));
+        memberService.save(new Member("도우너", "20210525"));
+        memberService.save(new Member("고길동", "1990406"));
 
         // iterator 반복문 표현 1
-        memberRepository.findAll().forEach((el) -> {
+        memberService.findAll().forEach((el) -> {
 
             // 첫 번째 회원이 게시글 작성
             if(el.getMemberId() == 1) {

@@ -7,13 +7,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * Member Object (without Lombok)
+ * Member Object
+ * <br/>
+ * 해당 엔티티는 member, member_authority 테이블을 생성합니다.
  */
 @Entity
 @Data
 @SecondaryTable(name = "member_authority",
         pkJoinColumns = @PrimaryKeyJoinColumn(name = "member_id"))
-
 public class Member {
 
     @Id
