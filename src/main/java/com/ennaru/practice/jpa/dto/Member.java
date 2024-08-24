@@ -1,10 +1,8 @@
-package com.ennaru.practice.jpa.domain;
+package com.ennaru.practice.jpa.dto;
 
 import com.ennaru.practice.jpa.enums.Authority;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 /**
  * Member Object

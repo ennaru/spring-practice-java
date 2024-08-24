@@ -1,4 +1,4 @@
-package com.ennaru.practice.jpa.domain;
+package com.ennaru.practice.jpa.dto;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

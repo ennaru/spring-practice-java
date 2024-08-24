@@ -1,6 +1,6 @@
 package com.ennaru.practice.transactional.service;
 
-import com.ennaru.practice.jpa.domain.Member;
+import com.ennaru.practice.jpa.dto.Member;
 import com.ennaru.practice.jpa.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

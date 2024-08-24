@@ -1,6 +1,6 @@
 package com.ennaru.practice.jpa.repository;
 
-import com.ennaru.practice.jpa.domain.Member;
+import com.ennaru.practice.jpa.dto.Member;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;

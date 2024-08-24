@@ -1,4 +1,4 @@
-package com.ennaru.practice.jpa;
+package com.ennaru.practice.common.handler;
 
 import com.ennaru.practice.common.domain.BaseResponse;
 import org.springframework.http.HttpStatus;
